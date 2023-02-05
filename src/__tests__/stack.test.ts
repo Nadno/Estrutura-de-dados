@@ -15,7 +15,7 @@ describe('Stack data structure', () => {
 
     const stack = new Stack<string>();
     stack.push(...elements);
-    expect([...stack]).toEqual(elements.reverse());
+    expect([...stack]).toEqual(elements);
   });
 
   it('should remove elements from the stack', () => {
@@ -71,7 +71,7 @@ describe('Stack data structure', () => {
 
     expect(stack.isEmpty).toBe(false);
     expect(stack.size).toBe(elements.length);
-    expect([...stack]).toEqual(elements.reverse());
+    expect([...stack]).toEqual(elements);
   });
 
   it('should get the top element within the stack', () => {
