@@ -15,12 +15,8 @@ export class Stack<T> implements IStack<T> {
     return this.size === 0;
   }
 
-  /**
-   * Iterate for each element in the stack, starting by the top element.
-   * This will be helpful in the tests.
-   */
   public *[Symbol.iterator]() {
-    for (let index = this.size - 1; index >= 0; index--) {
+    for (let index = 0; index < this.size; index++) {
       yield this.#elements[index];
     }
   }
