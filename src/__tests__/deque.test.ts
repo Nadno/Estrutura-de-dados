@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Deque } from '../data-structures/deque';
+import { Deque } from '@structures/deque';
 
 const numberElements = [1, 2, 3, 4, 5];
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Queue } from '../data-structures/queue/queue';
+import { Queue } from '@structures/queue';
 
 const numberElements = [1, 2, 3, 4, 5];
 

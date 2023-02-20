@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { UndoHistory } from '../utils/undo-history';
+import { UndoHistory } from '@utils/undo-history';
 
 type ToolActions = 'zoom-in' | 'zoom-out';
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { baseConverter } from '../utils/base-converter';
+import { baseConverter } from '@utils/base-converter';
 
 describe('Util base converter', () => {
   const randomNumbers = (min = 1, max = 100, length = 10) => {
