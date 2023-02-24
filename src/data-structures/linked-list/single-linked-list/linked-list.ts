@@ -38,6 +38,32 @@ export class SLinkedList<T> implements ISLinkedList<T> {
     return this.size > 0;
   }
 
+  public at(index: number): T | undefined {
+    const result = this.nodeAt(index);
+    return result && result.value;
+  }
+
+  public nodeAt(index: number): INode<T> | undefined {
+    if (!Number.isInteger(index))
+      throw new TypeError(`The index "${index}" must be a valid integer!`);
+
+    const isOutOfRange = index < 0 || index > this.#size - 1;
+    if (isOutOfRange)
+      throw new RangeError(
+        `The index "${index}" is out of the range of the linked list!`,
+      );
+
+    let count = 0,
+      node = this.head;
+
+    while (node && count < index) {
+      count++;
+      node = node.next;
+    }
+
+    return node;
+  }
+
   public push(...elements: Element<T>[]): void {
     const elementsQuantity = elements.length;
     if (!elementsQuantity) return;
