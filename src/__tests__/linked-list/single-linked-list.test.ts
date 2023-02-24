@@ -51,3 +51,58 @@ describe('Single Linked list base', () => {
     expect([...list]).toEqual([...expectedElements, ...expectedElements]);
   });
 });
+
+describe('Single Linked list', () => {
+  it('should get a node at the supplied index', () => {
+    const list = new LinkedList(...numberElements);
+
+    let index = 0,
+      node = list.head;
+
+    expect(node).not.toBeUndefined();
+
+    while (node) {
+      expect(list.nodeAt(index)).toBe(node);
+
+      index++;
+      node = node.next;
+    }
+  });
+
+  it('should get a node value at the supplied index', () => {
+    const list = new LinkedList(...numberElements);
+
+    let index = 0,
+      node = list.head;
+
+    expect(node).not.toBeUndefined();
+
+    while (node) {
+      expect(list.at(index)).toBe(node.value);
+
+      index++;
+      node = node.next;
+    }
+  });
+
+  it('should throw an error when passing invalid indexes to `nodeAt` or `at`', () => {
+    const invalidIndexes = [
+      -1,
+      numberElements.length,
+      NaN,
+      '',
+      {},
+      false,
+      true,
+      null,
+      undefined,
+    ];
+
+    const list = new LinkedList(...numberElements);
+
+    invalidIndexes.forEach((index) => {
+      expect(() => list.at(index as number)).toThrow();
+      expect(() => list.nodeAt(index as number)).toThrow();
+    });
+  });
+});
