@@ -95,4 +95,41 @@ describe('Single Linked list', () => {
       expect(() => list.nodeAt(index as number)).toThrow();
     });
   });
+
+  it('should get a index of a node or value', () => {
+    const list = new LinkedList(...numberElements);
+
+    let index = 0,
+      node = list.head;
+
+    expect(node).not.toBeUndefined();
+
+    while (node) {
+      expect(list.indexOf(node)).toBe(index);
+      expect(list.indexOf(node.value)).toBe(index);
+
+      index++;
+      node = node.next;
+    }
+  });
+
+  it('should return -1 when seeking a index of an element out of the linked list', () => {
+    const elementsOutOfList = [
+      '',
+      'a',
+      '1',
+      -1,
+      1042,
+      {},
+      null,
+      undefined,
+      NaN,
+    ];
+
+    const list = new LinkedList<any>(...numberElements);
+
+    elementsOutOfList.forEach((element) =>
+      expect(list.indexOf(element)).toBe(-1),
+    );
+  });
 });
