@@ -38,6 +38,37 @@ export class SLinkedList<T> implements ISLinkedList<T> {
     return this.size > 0;
   }
 
+  public at(index: number): T | undefined {
+    const result = this.nodeAt(index);
+    return result && result.value;
+  }
+
+  public nodeAt(index: number): INode<T> | undefined {
+    if (this._isOutRangeIndex(index)) return;
+    return this._find((_, count) => count === index).node;
+  }
+
+  private _isOutRangeIndex(index: number) {
+    if (!Number.isInteger(index))
+      throw new TypeError(`The index "${index}" must be a valid integer!`);
+
+    if (this.isEmpty) return true;
+    return index < 0 || index > this.#size - 1;
+  }
+
+  private _find(predicate: (node: INode<T>, index: number) => boolean) {
+    let count = 0,
+      node = this.head;
+
+    while (node) {
+      if (predicate(node, count)) break;
+      count++;
+      node = node.next;
+    }
+
+    return { node, index: node ? count : -1 };
+  }
+
   public push(...elements: Element<T>[]): void {
     const elementsQuantity = elements.length;
     if (!elementsQuantity) return;
