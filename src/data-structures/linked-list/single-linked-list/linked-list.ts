@@ -48,6 +48,14 @@ export class SLinkedList<T> implements ISLinkedList<T> {
     return this._find((_, count) => count === index).node;
   }
 
+  public indexOf(element: Element<T>): number {
+    const findElement = Node.isNode(element)
+      ? (node: INode<T>) => node === element
+      : (node: INode<T>) => node.value === element;
+
+    return this._find(findElement).index;
+  }
+
   private _checkIndex(index: number) {
     if (!Number.isInteger(index))
       throw new TypeError(`The index "${index}" must be a valid integer!`);
