@@ -53,15 +53,20 @@ export class SLinkedList<T> implements ISLinkedList<T> {
         `The index "${index}" is out of the range of the linked list!`,
       );
 
+    return this._find((_, count) => count === index).node;
+  }
+
+  private _find(predicate: (node: INode<T>, index: number) => boolean) {
     let count = 0,
       node = this.head;
 
-    while (node && count < index) {
+    while (node) {
+      if (predicate(node, count)) break;
       count++;
       node = node.next;
     }
 
-    return node;
+    return { node, index: node ? count : -1 };
   }
 
   public push(...elements: Element<T>[]): void {
