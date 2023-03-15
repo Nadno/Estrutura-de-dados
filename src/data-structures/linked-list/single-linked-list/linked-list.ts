@@ -56,6 +56,22 @@ export class SLinkedList<T> implements ISLinkedList<T> {
     return this._find(findElement).index;
   }
 
+  public remove(node: INode<T>): T | undefined {
+    if (this.head === node) {
+      this.head = this.head.next;
+      this.#size--;
+      return node.value;
+    }
+
+    const { node: prevNode } = this._find((current) => current.next === node);
+    if (!prevNode) return;
+
+    prevNode.insertNext(node.removeNext() as INode<T>);
+    this.#size--;
+
+    return node.value;
+  }
+
   private _isOutRangeIndex(index: number) {
     if (!Number.isInteger(index))
       throw new TypeError(`The index "${index}" must be a valid integer!`);
