@@ -44,7 +44,7 @@ export class SLinkedList<T> implements ISLinkedList<T> {
   }
 
   public nodeAt(index: number): INode<T> | undefined {
-    this._checkIndex(index);
+    if (this._isOutRangeIndex(index)) return;
     return this._find((_, count) => count === index).node;
   }
 
@@ -56,15 +56,12 @@ export class SLinkedList<T> implements ISLinkedList<T> {
     return this._find(findElement).index;
   }
 
-  private _checkIndex(index: number) {
+  private _isOutRangeIndex(index: number) {
     if (!Number.isInteger(index))
       throw new TypeError(`The index "${index}" must be a valid integer!`);
 
-    const isOutOfRange = index < 0 || index > this.#size - 1;
-    if (isOutOfRange)
-      throw new RangeError(
-        `The index "${index}" is out of the range of the linked list!`,
-      );
+    if (this.isEmpty) return true;
+    return index < 0 || index > this.#size - 1;
   }
 
   private _find(predicate: (node: INode<T>, index: number) => boolean) {
