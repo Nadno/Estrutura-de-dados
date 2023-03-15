@@ -132,4 +132,76 @@ describe('Single Linked list', () => {
       expect(list.indexOf(element)).toBe(-1),
     );
   });
+
+  it('should remove the supplied node, always from the begin', () => {
+    const list = new LinkedList(...numberElements);
+
+    const listValues = [...list];
+
+    while (list.notEmpty()) {
+      const node = list.nodeAt(0);
+
+      expect(node).not.toBeUndefined();
+      expect(list.remove(node as any)).toBe(listValues.shift());
+      expect(list.nodeAt(0)).not.toBe(node);
+    }
+
+    expect(list.isEmpty).toBe(true);
+  });
+
+  it('should remove the supplied node, always from the end', () => {
+    const list = new LinkedList(...numberElements);
+
+    const reversedListValues = [...list].reverse();
+
+    const removeValue = (value: number) => {
+      const index = list.indexOf(value),
+        node = list.nodeAt(index);
+
+      expect(node).not.toBeUndefined();
+      expect(list.remove(node as any)).toBe(value);
+      expect(list.nodeAt(index)).not.toBe(node);
+    };
+
+    reversedListValues.forEach(removeValue);
+    expect(list.isEmpty).toBe(true);
+  });
+
+  it('should remove the randomly supplied nodes', () => {
+    const randomListFrom = (list: any[]) => {
+      const listLength = list.length,
+        randomList = [...list];
+
+      let index = 0;
+
+      const randomBetween = (min: number, max: number) =>
+        Math.floor(Math.random() * (max - min + 1)) + min;
+
+      while (index < listLength) {
+        const randomIndex = randomBetween(index, listLength - 1);
+        const item = randomList[randomIndex];
+        randomList[randomIndex] = randomList[index];
+        randomList[index] = item;
+        index++;
+      }
+
+      return randomList;
+    };
+
+    const numberList = Array.from({ length: 50 }, (_, index) => index + 1),
+      randomList = randomListFrom(numberList),
+      list = new LinkedList(...numberList);
+
+    const removeValue = (value: number) => {
+      const index = list.indexOf(value),
+        node = list.nodeAt(index);
+
+      expect(node).not.toBeUndefined();
+      expect(list.remove(node as any)).toBe(value);
+      expect(list.nodeAt(index)).not.toBe(node);
+    };
+
+    randomList.forEach(removeValue);
+    expect(list.isEmpty).toBe(true);
+  });
 });
