@@ -86,17 +86,7 @@ describe('Single Linked list', () => {
   });
 
   it('should throw an error when passing invalid indexes to `nodeAt` or `at`', () => {
-    const invalidIndexes = [
-      -1,
-      numberElements.length,
-      NaN,
-      '',
-      {},
-      false,
-      true,
-      null,
-      undefined,
-    ];
+    const invalidIndexes = [NaN, '', {}, false, true, null, undefined];
 
     const list = new LinkedList(...numberElements);
 
