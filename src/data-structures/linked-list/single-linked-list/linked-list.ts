@@ -56,6 +56,26 @@ export class SLinkedList<T> implements ISLinkedList<T> {
     return this._find(findElement).index;
   }
 
+  public removeAt(index: number): T | undefined {
+    if (this._isOutRangeIndex(index)) return;
+
+    if (index === 0) {
+      const first = this.head as INode<T>;
+      this.head = first.next;
+      this.#size--;
+      return first.value;
+    }
+
+    const { node: prevNode } = this._find((_, _index) => _index === index - 1);
+    if (!prevNode) return;
+
+    const node = prevNode.removeNext() as INode<T>;
+    node.next && prevNode.insertNext(node.removeNext() as INode<T>);
+    this.#size--;
+
+    return node && node.value;
+  }
+
   public remove(node: INode<T>): T | undefined {
     if (this.head === node) {
       this.head = this.head.next;
