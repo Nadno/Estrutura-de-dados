@@ -53,6 +53,9 @@ describe('Single Linked list base', () => {
 });
 
 describe('Single Linked list', () => {
+  const randomBetween = (min: number, max: number) =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
+
   it('should get a node at the supplied index', () => {
     const list = new LinkedList(...numberElements);
 
@@ -174,9 +177,6 @@ describe('Single Linked list', () => {
 
       let index = 0;
 
-      const randomBetween = (min: number, max: number) =>
-        Math.floor(Math.random() * (max - min + 1)) + min;
-
       while (index < listLength) {
         const randomIndex = randomBetween(index, listLength - 1);
         const item = randomList[randomIndex];
@@ -202,6 +202,52 @@ describe('Single Linked list', () => {
     };
 
     randomList.forEach(removeValue);
+    expect(list.isEmpty).toBe(true);
+  });
+
+  it('should remove the node at index, always from the begin', () => {
+    const list = new LinkedList(...numberElements);
+
+    while (list.notEmpty()) {
+      const index = 0;
+      const expectedValue = list.nodeAt(index)?.value,
+        removedValue = list.removeAt(index);
+
+      expect(removedValue).not.toBeUndefined();
+      expect(removedValue).toBe(expectedValue);
+    }
+
+    expect(list.isEmpty).toBe(true);
+  });
+
+  it('should remove the node at index, always from the end', () => {
+    const list = new LinkedList(...numberElements);
+
+    while (list.notEmpty()) {
+      const index = list.size - 1;
+      const expectedValue = list.nodeAt(index)?.value,
+        removedValue = list.removeAt(index);
+
+      expect(removedValue).not.toBeUndefined();
+      expect(removedValue).toBe(expectedValue);
+    }
+
+    expect(list.isEmpty).toBe(true);
+  });
+
+  it('should remove the node at the random index', () => {
+    const numberList = Array.from({ length: 50 }, (_, index) => index + 1),
+      list = new LinkedList(...numberList);
+
+    while (list.notEmpty()) {
+      const index = randomBetween(0, list.size - 1);
+      const expectedValue = list.nodeAt(index)?.value,
+        removedValue = list.removeAt(index);
+
+      expect(removedValue).not.toBeUndefined();
+      expect(removedValue).toBe(expectedValue);
+    }
+
     expect(list.isEmpty).toBe(true);
   });
 });
