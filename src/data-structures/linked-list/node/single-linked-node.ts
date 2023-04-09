@@ -16,9 +16,9 @@ export class SNode<T> implements ISingleLinkedNode<T> {
     this.next = SNode.isNode<T>(value) ? value : new SNode<T>(value);
   }
 
-  public removeNext(): T | undefined {
+  public removeNext(): ISingleLinkedNode<T> | undefined {
     if (!this.next) return;
-    const result = this.next.value;
+    const result = this.next;
     this.next = undefined;
     return result;
   }
