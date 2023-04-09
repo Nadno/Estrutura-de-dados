@@ -27,7 +27,7 @@ describe('Linked list Node', () => {
 
     expect(node.next).toHaveProperty('value', expected);
 
-    expect(node.removeNext()).toBe(expected);
+    expect(node.removeNext()?.value).toBe(expected);
     expect(node).toHaveProperty('next', undefined);
   });
 
