@@ -63,11 +63,10 @@ export class SLinkedList<T> implements ISLinkedList<T> {
       return node.value;
     }
 
-    const result = this._find((current) => current.next === node);
-    if (!result.node) return;
+    const { node: prevNode } = this._find((current) => current.next === node);
+    if (!prevNode) return;
 
-    const prevNode = result.node;
-    prevNode.next = node.next;
+    prevNode.insertNext(node.removeNext() as INode<T>);
     this.#size--;
 
     return node.value;
