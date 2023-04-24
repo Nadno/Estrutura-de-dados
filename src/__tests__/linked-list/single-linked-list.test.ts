@@ -56,7 +56,21 @@ describe('Single Linked list', () => {
   const randomBetween = (min: number, max: number) =>
     Math.floor(Math.random() * (max - min + 1)) + min;
 
-  it('should get a node at the supplied index', () => {
+  const getArrayOfNodes = <T>(list: LinkedList<T>) => {
+    const result = Array(list.size);
+
+    let node = list.head,
+      index = 0;
+
+    while (node) {
+      result[index++] = node;
+      node = node.next;
+    }
+
+    return result;
+  };
+
+  it('should get a node at the supplied positive index', () => {
     const list = new LinkedList(...numberElements);
 
     let index = 0,
@@ -72,7 +86,19 @@ describe('Single Linked list', () => {
     }
   });
 
-  it('should get a node value at the supplied index', () => {
+  it('should get a node at the supplied negative index', () => {
+    const list = new LinkedList(...numberElements),
+      nodes = getArrayOfNodes(list);
+
+    let index = list.size - 1;
+
+    while (index >= 0) {
+      const negativeIndex = index - list.size;
+      expect(list.nodeAt(negativeIndex)).toBe(nodes[index--]);
+    }
+  });
+
+  it('should get a node value at the supplied positive index', () => {
     const list = new LinkedList(...numberElements);
 
     let index = 0,
@@ -85,6 +111,18 @@ describe('Single Linked list', () => {
 
       index++;
       node = node.next;
+    }
+  });
+
+  it('should get a node value at the supplied negative index', () => {
+    const list = new LinkedList(...numberElements),
+      nodes = getArrayOfNodes(list);
+
+    let index = list.size - 1;
+
+    while (index >= 0) {
+      const negativeIndex = index - list.size;
+      expect(list.at(negativeIndex)).toBe(nodes[index--].value);
     }
   });
 
