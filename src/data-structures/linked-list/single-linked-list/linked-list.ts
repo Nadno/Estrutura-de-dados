@@ -44,6 +44,7 @@ export class SLinkedList<T> implements ISLinkedList<T> {
   }
 
   public nodeAt(index: number): INode<T> | undefined {
+    if (index < 0) index = this.size + index;
     if (this._isOutRangeIndex(index)) return;
     return this._find((_, count) => count === index).node;
   }
