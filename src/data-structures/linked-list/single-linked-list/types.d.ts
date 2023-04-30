@@ -14,7 +14,11 @@ export interface ISLinkedList<T> {
   at(index: number): T | undefined;
   nodeAt(index: number): INode<T> | undefined;
   indexOf(element: Element<T>): number;
-  insert(elements: Element<T> | Element<T>[], index: number): void;
+  insert(
+    where: 'before' | 'after',
+    index: number,
+    elements: Element<T> | Element<T>[],
+  ): void;
   remove(element: INode<T>): T | undefined;
   removeAt(index: number): T | undefined;
 }

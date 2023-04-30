@@ -57,6 +57,73 @@ export class SLinkedList<T> implements ISLinkedList<T> {
     return this._find(findElement).index;
   }
 
+  public insert(
+    where: 'before' | 'after',
+    index: number,
+    elements: Element<T> | Element<T>[],
+  ): void {
+    if (index < 0) index = this.size + index;
+
+    if (index !== 0 && this._isOutRangeIndex(index))
+      throw new Error(
+        `The index "${index}" is out of range of the list of size "${this.size}".`,
+      );
+
+    elements = Array.isArray(elements) ? elements : [elements];
+
+    if (index === 0) {
+      const { head, tail } = this.arrayToLinkedNodes(elements);
+
+      if (!this.notEmpty()) {
+        this.head = head;
+        this.tail = tail;
+        this.#size += elements.length;
+        return;
+      }
+
+      if (where === 'before') {
+        tail.next = this.head;
+        this.head = head;
+      } else {
+        tail.next = this.head.next;
+        this.head.next = head;
+      }
+
+      this.#size += elements.length;
+      return;
+    }
+
+    if (where === 'before') index = index - 1;
+
+    const { node: prevNode } = this._find((_, _index) => _index === index);
+    if (!prevNode) return;
+
+    const { head, tail } = this.arrayToLinkedNodes(elements);
+
+    tail.next = prevNode.next;
+    prevNode.next = head;
+
+    if (where === 'after') this.tail = tail;
+
+    this.#size += elements.length;
+  }
+
+  private arrayToLinkedNodes(elements: Element<T>[]) {
+    let currentElement = 0;
+
+    const head = this.nodeFrom(elements[currentElement++]);
+
+    let tail: INode<T> = head;
+
+    while (currentElement < elements.length) {
+      tail.insertNext(elements[currentElement]);
+      if (tail.next) tail = tail.next;
+      currentElement++;
+    }
+
+    return { head, tail };
+  }
+
   public removeAt(index: number): T | undefined {
     if (this._isOutRangeIndex(index)) return;
 
