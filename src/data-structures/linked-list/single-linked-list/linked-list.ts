@@ -1,4 +1,5 @@
-import { SNode as Node, ISingleLinkedNode as INode } from '../node';
+import { SNode as Node, ISingleNode as INode } from '../node';
+import { BaseLinkedList } from '../base-linked-list';
 import { Element, ISLinkedList, IFilledSLinkedList } from './types';
 
 /**
@@ -7,18 +8,14 @@ import { Element, ISLinkedList, IFilledSLinkedList } from './types';
  * Linked Lists consume a bit more memory than an Array,
  * but they can do less expensive operations (e.g add and remove).
  */
-export class SLinkedList<T> implements ISLinkedList<T> {
+export class SLinkedList<T>
+  extends BaseLinkedList<T, INode<T>>
+  implements ISLinkedList<T>
+{
   public static readonly Node = Node;
-  public head: INode<T> | undefined;
-  public tail: INode<T> | undefined;
-  #size = 0;
 
-  constructor(...elements: Element<T>[]) {
-    this.push(...elements);
-  }
-
-  public get size() {
-    return this.#size;
+  public static from<T>(iterable: Iterable<T>): ISLinkedList<T> {
+    return new SLinkedList(...iterable);
   }
 
   public *[Symbol.iterator]() {
@@ -30,31 +27,14 @@ export class SLinkedList<T> implements ISLinkedList<T> {
     }
   }
 
-  public get isEmpty(): boolean {
-    return !this.notEmpty();
-  }
-
   public notEmpty(): this is IFilledSLinkedList<T> {
-    return this.size > 0;
-  }
-
-  public at(index: number): T | undefined {
-    const result = this.nodeAt(index);
-    return result && result.value;
+    return !this.isEmpty;
   }
 
   public nodeAt(index: number): INode<T> | undefined {
     if (index < 0) index = this.size + index;
     if (this._isOutRangeIndex(index)) return;
-    return this._find((_, count) => count === index).node;
-  }
-
-  public indexOf(element: Element<T>): number {
-    const findElement = Node.isNode(element)
-      ? (node: INode<T>) => node === element
-      : (node: INode<T>) => node.value === element;
-
-    return this._find(findElement).index;
+    return this._findAt(index).node;
   }
 
   public insert(
@@ -62,14 +42,14 @@ export class SLinkedList<T> implements ISLinkedList<T> {
     index: number,
     elements: Element<T> | Element<T>[],
   ): void {
-    if (index < 0) index = this.size + index;
+    if (index < 0) index = this._size + index;
 
     if (index !== 0 && this._isOutRangeIndex(index))
       throw new Error(
         `The index "${index}" is out of range of the list of size "${this.size}".`,
       );
 
-    elements = Array.isArray(elements) ? elements : [elements];
+    if (!Array.isArray(elements)) elements = [elements];
 
     if (index === 0) {
       const { head, tail } = this.arrayToLinkedNodes(elements);
@@ -77,7 +57,7 @@ export class SLinkedList<T> implements ISLinkedList<T> {
       if (!this.notEmpty()) {
         this.head = head;
         this.tail = tail;
-        this.#size += elements.length;
+        this._size += elements.length;
         return;
       }
 
@@ -89,13 +69,13 @@ export class SLinkedList<T> implements ISLinkedList<T> {
         this.head.next = head;
       }
 
-      this.#size += elements.length;
+      this._size += elements.length;
       return;
     }
 
     if (where === 'before') index = index - 1;
 
-    const { node: prevNode } = this._find((_, _index) => _index === index);
+    const { node: prevNode } = this._findAt(index);
     if (!prevNode) return;
 
     const { head, tail } = this.arrayToLinkedNodes(elements);
@@ -105,23 +85,7 @@ export class SLinkedList<T> implements ISLinkedList<T> {
 
     if (where === 'after') this.tail = tail;
 
-    this.#size += elements.length;
-  }
-
-  private arrayToLinkedNodes(elements: Element<T>[]) {
-    let currentElement = 0;
-
-    const head = this.nodeFrom(elements[currentElement++]);
-
-    let tail: INode<T> = head;
-
-    while (currentElement < elements.length) {
-      tail.insertNext(elements[currentElement]);
-      if (tail.next) tail = tail.next;
-      currentElement++;
-    }
-
-    return { head, tail };
+    this._size += elements.length;
   }
 
   public removeAt(index: number): T | undefined {
@@ -130,16 +94,15 @@ export class SLinkedList<T> implements ISLinkedList<T> {
     if (index === 0) {
       const first = this.head as INode<T>;
       this.head = first.next;
-      this.#size--;
+      this._size--;
       return first.value;
     }
 
-    const { node: prevNode } = this._find((_, _index) => _index === index - 1);
+    const { node: prevNode } = this._findAt(index - 1);
     if (!prevNode) return;
 
-    const node = prevNode.removeNext() as INode<T>;
-    node.next && prevNode.insertNext(node.removeNext() as INode<T>);
-    this.#size--;
+    const node = prevNode.detachNext();
+    this._size--;
 
     return node && node.value;
   }
@@ -147,38 +110,30 @@ export class SLinkedList<T> implements ISLinkedList<T> {
   public remove(node: INode<T>): T | undefined {
     if (this.head === node) {
       this.head = this.head.next;
-      this.#size--;
+      this._size--;
+
+      if (this.tail === node) this.tail = this.head;
+
       return node.value;
     }
 
     const { node: prevNode } = this._find((current) => current.next === node);
     if (!prevNode) return;
 
-    prevNode.insertNext(node.removeNext() as INode<T>);
-    this.#size--;
+    prevNode.detachNext();
+    this._size--;
+
+    if (this.tail === node) this.tail = prevNode;
 
     return node.value;
   }
 
-  private _isOutRangeIndex(index: number) {
+  protected _isOutRangeIndex(index: number) {
     if (!Number.isInteger(index))
       throw new TypeError(`The index "${index}" must be a valid integer!`);
 
     if (this.isEmpty) return true;
-    return index < 0 || index > this.#size - 1;
-  }
-
-  private _find(predicate: (node: INode<T>, index: number) => boolean) {
-    let count = 0,
-      node = this.head;
-
-    while (node) {
-      if (predicate(node, count)) break;
-      count++;
-      node = node.next;
-    }
-
-    return { node, index: node ? count : -1 };
+    return index < 0 || index > this._size - 1;
   }
 
   public push(...elements: Element<T>[]): void {
@@ -192,7 +147,7 @@ export class SLinkedList<T> implements ISLinkedList<T> {
     for (let index = isEmpty ? 1 : 0; index < elementsQuantity; index++) {
       this.tail.insertNext(elements[index]);
       this.tail = this.tail.next as INode<T>;
-      this.#size++;
+      this._size++;
     }
   }
 
@@ -205,20 +160,28 @@ export class SLinkedList<T> implements ISLinkedList<T> {
     if (!this.notEmpty()) return;
 
     for (let index = isEmpty ? 1 : 0; index < elementsQuantity; index++) {
-      const newHead = this.nodeFrom(elements[index]);
+      const newHead = this._nodeFrom(elements[index]);
       newHead.insertNext(this.head);
       this.head = newHead;
-      this.#size++;
+      this._size++;
     }
   }
 
   private insertFirst(element: Element<T>): void {
-    this.head = this.nodeFrom(element);
+    this.head = this._nodeFrom(element);
     this.tail = this.head;
-    this.#size++;
+    this._size++;
   }
 
-  private nodeFrom(element: Element<T>): INode<T> {
-    return Node.isNode<T>(element) ? element : new Node<T>(element);
+  protected _findAt(index: number) {
+    return this._find((_: unknown, _index: number) => _index === index);
+  }
+
+  protected _nodeFrom(element: Element<T>): INode<T> {
+    return this._isNode(element) ? element : new Node<T>(element);
+  }
+
+  protected _isNode(value: any): value is INode<T> {
+    return Node.isNode(value);
   }
 }

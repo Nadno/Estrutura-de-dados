@@ -1,9 +1,25 @@
-import { SLinkedList as LinkedList, SNode } from '@structures/linked-list';
+import { DNode, DLinkedList as LinkedList } from '@structures/linked-list';
 import { describe, expect, it } from 'vitest';
 
 const numberElements = [1, 2, 3, 4, 5];
 
-describe('Single Linked list', () => {
+const iterate = (
+  over: 'next' | 'prev',
+  list: LinkedList<any>,
+  expectedValues: any[],
+  callback: (node: DNode<any>, expected: any) => void,
+) => {
+  let node = over === 'next' ? list.head : list.tail,
+    index = over === 'next' ? 0 : expectedValues.length - 1;
+
+  while (node) {
+    callback(node, expectedValues[index]);
+    node = node[over as 'next'];
+    index = over === 'next' ? index + 1 : index - 1;
+  }
+};
+
+describe('Doubly Linked list', () => {
   const randomBetween = (min: number, max: number) =>
     Math.floor(Math.random() * (max - min + 1)) + min;
 
@@ -44,8 +60,11 @@ describe('Single Linked list', () => {
     let index = list.size - 1;
 
     while (index >= 0) {
-      const negativeIndex = index - list.size;
-      expect(list.nodeAt(negativeIndex)).toBe(nodes[index--]);
+      const negativeIndex = index - list.size,
+        found = list.nodeAt(negativeIndex),
+        expected = nodes[index--];
+
+      expect(found).toBe(expected);
     }
   });
 
@@ -241,7 +260,7 @@ describe('Single Linked list', () => {
   });
 });
 
-describe('Single Linked list insert before', () => {
+describe('Doubly Linked list insert before', () => {
   it('should insert a single value before the first index in an empty list', () => {
     const list = new LinkedList<number>(),
       value = 1;
@@ -251,6 +270,16 @@ describe('Single Linked list insert before', () => {
     expect(list.size).toBe(1);
     expect(list.head).toHaveProperty('value', value);
     expect(list.tail).toHaveProperty('value', value);
+
+    const expectedValues = [value];
+
+    iterate('next', list, expectedValues, (node, expected) =>
+      expect(node).toHaveProperty('value', expected),
+    );
+
+    iterate('prev', list, expectedValues, (node, expected) =>
+      expect(node).toHaveProperty('value', expected),
+    );
   });
 
   it('should insert a single value before the first index in a filled list', () => {
@@ -261,21 +290,39 @@ describe('Single Linked list insert before', () => {
 
     expect(list.size).toBe(numberElements.length);
     expect(list.head).toHaveProperty('value', value);
+
+    const expectedValues = [value, ...numberElements.slice(1)];
+
+    iterate('next', list, expectedValues, (node, expected) =>
+      expect(node).toHaveProperty('value', expected),
+    );
+
+    iterate('prev', list, expectedValues, (node, expected) =>
+      expect(node).toHaveProperty('value', expected),
+    );
   });
 
   it('should insert multiple values before the first index', () => {
     const list = new LinkedList<number>(4),
-      expectedArray = [1, 2, 3, 4];
+      expectedValues = [1, 2, 3, 4];
 
     list.insert('before', 0, [1, 2, 3]);
 
-    expect([...list]).toEqual(expectedArray);
-    expect(list.size).toBe(expectedArray.length);
+    expect([...list]).toEqual(expectedValues);
+    expect(list.size).toBe(expectedValues.length);
+
+    iterate('next', list, expectedValues, (node, expected) =>
+      expect(node).toHaveProperty('value', expected),
+    );
+
+    iterate('prev', list, expectedValues, (node, expected) =>
+      expect(node).toHaveProperty('value', expected),
+    );
   });
 
   it('should insert a single node before the first index', () => {
     const list = new LinkedList<number>(),
-      node = new SNode(1);
+      node = new DNode(1);
 
     list.insert('before', 0, node);
 
@@ -285,11 +332,11 @@ describe('Single Linked list insert before', () => {
   });
 
   it('should insert multiple nodes before the first index', () => {
-    const initialNode = new SNode(4),
+    const initialNode = new DNode(4),
       list = new LinkedList<number>(initialNode),
       remainingNodes = Array.from(
         { length: 3 },
-        (_, index) => new SNode(index + 1),
+        (_, index) => new DNode(index + 1),
       );
 
     list.insert('before', 0, remainingNodes);
@@ -321,6 +368,14 @@ describe('Single Linked list insert before', () => {
 
     expect([...list]).toEqual(expectedValues);
     expect(list.size).toBe(expectedValues.length);
+
+    iterate('next', list, expectedValues, (node, expected) =>
+      expect(node).toHaveProperty('value', expected),
+    );
+
+    iterate('prev', list, expectedValues, (node, expected) =>
+      expect(node).toHaveProperty('value', expected),
+    );
   });
 
   it('should insert a single node before the last index in a filled list', () => {
@@ -328,7 +383,7 @@ describe('Single Linked list insert before', () => {
         ...numberElements.slice(0, -2),
         ...numberElements.slice(-1),
       ),
-      node = new SNode(numberElements.at(-2) as number);
+      node = new DNode(numberElements.at(-2) as number);
 
     list.insert('before', list.size - 1, node);
 
@@ -338,7 +393,7 @@ describe('Single Linked list insert before', () => {
 
   it('should insert a single node before the last index', () => {
     const list = new LinkedList<number>(),
-      node = new SNode(1);
+      node = new DNode(1);
 
     list.insert('before', 0, node);
 
@@ -348,11 +403,11 @@ describe('Single Linked list insert before', () => {
   });
 
   it('should insert multiple nodes before the last index', () => {
-    const initialNodes = [new SNode(1), new SNode(5)],
+    const initialNodes = [new DNode(1), new DNode(5)],
       list = new LinkedList<number>(...initialNodes),
       remainingNodes = Array.from(
         { length: 3 },
-        (_, index) => new SNode(index + 2),
+        (_, index) => new DNode(index + 2),
       );
 
     list.insert('before', list.size - 1, remainingNodes);
@@ -375,7 +430,7 @@ describe('Single Linked list insert before', () => {
   });
 });
 
-describe('Single Linked list insert after', () => {
+describe('Doubly Linked list insert after', () => {
   it('should insert a single value after the first index in an empty list', () => {
     const list = new LinkedList<number>(),
       value = 1;
@@ -412,7 +467,7 @@ describe('Single Linked list insert after', () => {
 
   it('should insert a single node after the first index', () => {
     const list = new LinkedList<number>(),
-      node = new SNode(1);
+      node = new DNode(1);
 
     list.insert('after', 0, node);
 
@@ -422,11 +477,11 @@ describe('Single Linked list insert after', () => {
   });
 
   it('should insert multiple nodes after the first index', () => {
-    const initialNode = new SNode(1),
+    const initialNode = new DNode(1),
       list = new LinkedList<number>(initialNode),
       remainingNodes = Array.from(
         { length: 3 },
-        (_, index) => new SNode(index + 2),
+        (_, index) => new DNode(index + 2),
       );
 
     list.insert('after', 0, remainingNodes);
@@ -458,7 +513,7 @@ describe('Single Linked list insert after', () => {
 
   it('should insert a single node after the last index', () => {
     const list = new LinkedList<number>(),
-      node = new SNode(1);
+      node = new DNode(1);
 
     list.insert('after', 0, node);
 
@@ -469,7 +524,7 @@ describe('Single Linked list insert after', () => {
 
   it('should insert a single node after the last index in an empty list', () => {
     const list = new LinkedList<number>(),
-      node = new SNode(1);
+      node = new DNode(1);
 
     list.insert('after', 0, node);
 
@@ -480,7 +535,7 @@ describe('Single Linked list insert after', () => {
 
   it('should insert a single node after the last index in a filled list', () => {
     const list = new LinkedList<number>(...numberElements.slice(0, -1)),
-      node = new SNode(numberElements.at(-1) as number);
+      node = new DNode(numberElements.at(-1) as number);
 
     list.insert('after', -1, node);
 
@@ -489,11 +544,11 @@ describe('Single Linked list insert after', () => {
   });
 
   it('should insert multiple nodes after the last index', () => {
-    const initialNodes = [new SNode(1), new SNode(2)],
+    const initialNodes = [new DNode(1), new DNode(2)],
       list = new LinkedList<number>(...initialNodes),
       remainingNodes = Array.from(
         { length: 3 },
-        (_, index) => new SNode(index + 2),
+        (_, index) => new DNode(index + 2),
       );
 
     list.insert('after', -1, remainingNodes);

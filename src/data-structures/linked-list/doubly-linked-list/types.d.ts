@@ -1,11 +1,13 @@
-import type { ISingleNode as INode } from '../node';
+import type { IDoublyNode as INode } from '../node';
 
 export type Element<T> = T | INode<T>;
 
-export interface ISLinkedList<T> extends IBaseLinkedList<T, INode<T>> {
+export interface IDLinkedList<T> extends IBaseLinkedList<T, INode<T>> {
   notEmpty(): boolean;
   push(...elements: Element<T>[]): void;
+  pop(): T | undefined;
   unshift(...elements: Element<T>[]): void;
+  shift(): T | undefined;
   insert(
     where: 'before' | 'after',
     index: number,
@@ -15,7 +17,7 @@ export interface ISLinkedList<T> extends IBaseLinkedList<T, INode<T>> {
   removeAt(index: number): T | undefined;
 }
 
-export interface IFilledSLinkedList<T> extends ISLinkedList<T> {
+export interface IFilledDLinkedList<T> extends IDLinkedList<T> {
   head: INode<T>;
   tail: INode<T>;
 }
