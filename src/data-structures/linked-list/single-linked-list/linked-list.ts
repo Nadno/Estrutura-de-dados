@@ -136,7 +136,11 @@ export class SLinkedList<T>
     return index < 0 || index > this._size - 1;
   }
 
-  public push(...elements: Element<T>[]): void {
+  public push(...elements: Element<T>[]) {
+    return this.add(...elements);
+  }
+
+  public add(...elements: Element<T>[]): void {
     const elementsQuantity = elements.length;
     if (!elementsQuantity) return;
 

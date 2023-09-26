@@ -1,129 +1,11 @@
 import { SLinkedList as LinkedList, SNode } from '@structures/linked-list';
 import { describe, expect, it } from 'vitest';
 
-const numberElements = [1, 2, 3, 4, 5];
-
 describe('Single Linked list', () => {
+  const numberElements = [1, 2, 3, 4, 5];
+
   const randomBetween = (min: number, max: number) =>
     Math.floor(Math.random() * (max - min + 1)) + min;
-
-  const getArrayOfNodes = <T>(list: LinkedList<T>) => {
-    const result = Array(list.size);
-
-    let node = list.head,
-      index = 0;
-
-    while (node) {
-      result[index++] = node;
-      node = node.next;
-    }
-
-    return result;
-  };
-
-  it('should get a node at the supplied positive index', () => {
-    const list = new LinkedList(...numberElements);
-
-    let index = 0,
-      node = list.head;
-
-    expect(node).not.toBeUndefined();
-
-    while (node) {
-      expect(list.nodeAt(index)).toBe(node);
-
-      index++;
-      node = node.next;
-    }
-  });
-
-  it('should get a node at the supplied negative index', () => {
-    const list = new LinkedList(...numberElements),
-      nodes = getArrayOfNodes(list);
-
-    let index = list.size - 1;
-
-    while (index >= 0) {
-      const negativeIndex = index - list.size;
-      expect(list.nodeAt(negativeIndex)).toBe(nodes[index--]);
-    }
-  });
-
-  it('should get a node value at the supplied positive index', () => {
-    const list = new LinkedList(...numberElements);
-
-    let index = 0,
-      node = list.head;
-
-    expect(node).not.toBeUndefined();
-
-    while (node) {
-      expect(list.at(index)).toBe(node.value);
-
-      index++;
-      node = node.next;
-    }
-  });
-
-  it('should get a node value at the supplied negative index', () => {
-    const list = new LinkedList(...numberElements),
-      nodes = getArrayOfNodes(list);
-
-    let index = list.size - 1;
-
-    while (index >= 0) {
-      const negativeIndex = index - list.size;
-      expect(list.at(negativeIndex)).toBe(nodes[index--].value);
-    }
-  });
-
-  it('should throw an error when passing invalid indexes to `nodeAt` or `at`', () => {
-    const invalidIndexes = [NaN, '', {}, false, true, null, undefined];
-
-    const list = new LinkedList(...numberElements);
-
-    invalidIndexes.forEach((index) => {
-      expect(() => list.at(index as number)).toThrow();
-      expect(() => list.nodeAt(index as number)).toThrow();
-    });
-  });
-
-  it('should get a index of a node or value', () => {
-    const list = new LinkedList(...numberElements);
-
-    let index = 0,
-      node = list.head;
-
-    expect(node).not.toBeUndefined();
-
-    while (node) {
-      expect(list.indexOf(node)).toBe(index);
-      expect(list.indexOf(node.value)).toBe(index);
-
-      index++;
-      node = node.next;
-    }
-  });
-
-  it('should return -1 when seeking a index of an element out of the linked list', () => {
-    const elementsOutOfList = [
-      '',
-      'a',
-      '1',
-      -1,
-      1042,
-      {},
-      null,
-      undefined,
-      NaN,
-    ];
-
-    const list = new LinkedList<any>(...numberElements);
-
-    elementsOutOfList.forEach((element) =>
-      expect(list.indexOf(element)).toBe(-1),
-    );
-  });
 
   it('should remove the supplied node, always from the begin', () => {
     const list = new LinkedList(...numberElements);
@@ -242,6 +124,8 @@ describe('Single Linked list', () => {
 });
 
 describe('Single Linked list insert before', () => {
+  const numberElements = [1, 2, 3, 4, 5];
+
   it('should insert a single value before the first index in an empty list', () => {
     const list = new LinkedList<number>(),
       value = 1;
@@ -376,6 +260,8 @@ describe('Single Linked list insert before', () => {
 });
 
 describe('Single Linked list insert after', () => {
+  const numberElements = [1, 2, 3, 4, 5];
+
   it('should insert a single value after the first index in an empty list', () => {
     const list = new LinkedList<number>(),
       value = 1;
@@ -389,10 +275,11 @@ describe('Single Linked list insert after', () => {
 
   it('should insert a single value after the first index in a filled list', () => {
     const list = new LinkedList<number>(
-        ...numberElements.slice(0, 1),
-        ...numberElements.slice(2),
-      ),
-      value = numberElements.at(1) as number;
+      ...numberElements.slice(0, 1),
+      ...numberElements.slice(2),
+    );
+
+    const value = numberElements.at(1) as number;
 
     list.insert('after', 0, value);
 

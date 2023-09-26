@@ -31,7 +31,11 @@ export class DLinkedList<T>
     return this._findAt(index).node;
   }
 
-  public push(...elements: Element<T>[]): void {
+  public push(...elements: Element<T>[]) {
+    return this.add(...elements);
+  }
+
+  public add(...elements: Element<T>[]): void {
     const elementsQuantity = elements.length;
     if (!elementsQuantity) return;
 

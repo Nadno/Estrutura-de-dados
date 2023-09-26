@@ -24,7 +24,7 @@ export abstract class BaseLinkedList<TValue, TNode extends ISingleNode<TValue>>
   protected _size = 0;
 
   constructor(...elements: Element<TValue>[]) {
-    this.push(...elements);
+    this.add(...elements);
   }
 
   public get size() {
@@ -50,7 +50,7 @@ export abstract class BaseLinkedList<TValue, TNode extends ISingleNode<TValue>>
     return this._find(findElement).index;
   }
 
-  public abstract push(...elements: Element<TValue>[]): void;
+  public abstract add(...elements: Element<TValue>[]): void;
 
   protected arrayToLinkedNodes(elements: Element<TValue>[]) {
     let currentElement = 0;
