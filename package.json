@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "eslint src/** && tsc && vite build",
     "test": "vitest run",
-    "test:linked-list": "vitest run ./__tests__/linked-list/ --reporter=verbose"
+    "test:linked-list": "vitest run ./__tests__/linked-list/ --reporter=verbose",
+    "test:priority-queue": "vitest run ./__tests__/priority-queue.test.ts --reporter=verbose"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.50.0",
