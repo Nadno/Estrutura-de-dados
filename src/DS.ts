@@ -1,6 +1,7 @@
 export * from '@structures/stack';
 export * from '@structures/queue';
 export * from '@structures/deque';
+export * from '@structures/data-set';
 export * from '@structures/linked-list';
 export * from '@structures/priority-queue';
 
