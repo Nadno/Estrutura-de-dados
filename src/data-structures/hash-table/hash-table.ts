@@ -132,10 +132,11 @@ export class HashTable<TKey extends HashTableKey, TValue>
   private _hash(key: TKey): number {
     const stringKey = String(key);
 
-    let result = 3000;
+    let result = 5381;
 
     for (let index = 0; index < stringKey.length; index++) {
-      result += stringKey.charCodeAt(index);
+      result = (result << 5) + result + stringKey.charCodeAt(index);
+      result = result & result;
     }
 
     return result;
